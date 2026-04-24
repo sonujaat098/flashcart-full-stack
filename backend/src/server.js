@@ -34,18 +34,10 @@ const statusRank = orderFlow.reduce((ranks, step, index) => {
 
 let databaseError = null;
 
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || process.env.NODE_ENV !== "production" || frontendUrls.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error("Origin is not allowed by CORS"));
-    }
-  })
-);
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(express.json());
 app.use(morgan("tiny"));
 

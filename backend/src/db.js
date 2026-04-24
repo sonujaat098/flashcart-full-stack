@@ -30,15 +30,29 @@ export async function seedCatalog() {
 }
 
 export async function connectDatabase() {
-  const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/flashcart";
+  console.log("ENV MONGO:", process.env.MONGODB_URI); // 👈 debug line
 
   if (!process.env.MONGODB_URI) {
-    console.warn("MONGODB_URI is not set. Trying local MongoDB at mongodb://127.0.0.1:27017/flashcart.");
+    console.warn("MONGODB_URI is NOT set. Falling back to localhost (this will fail on Render).");
   }
 
-  mongoose.set("strictQuery", true);
-  await mongoose.connect(mongoUri);
-  await seedCatalog();
-  console.log("MongoDB connected and catalog seeded");
-  return true;
+  const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/flashcart";
+
+  try {
+    mongoose.set("strictQuery", true);
+
+    await mongoose.connect(mongoUri);
+
+    console.log("✅ MongoDB connected");
+
+    await seedCatalog();
+    console.log("✅ Catalog seeded");
+
+    return true;
+
+  } catch (err) {
+    console.error("❌ MongoDB CONNECTION ERROR:");
+    console.error(err.message);
+    return false;
+  }
 }
